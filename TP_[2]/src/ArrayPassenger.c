@@ -162,7 +162,7 @@ int addPassenger (Passenger list [], int tam, int id, char name[], char lastName
 void printPassenger(Passenger pasajero)
 {
 
-    printf("%04d      %s      %s           $%5.2f      %d			%d\n", pasajero.id, pasajero.name, pasajero.lastname, pasajero.price, pasajero.typePassenger, pasajero.statusFlight);
+    printf("%04d      %s      %s           $%5.2f      %d		 %s		%d\n", pasajero.id, pasajero.name, pasajero.lastname, pasajero.price, pasajero.typePassenger, pasajero.flycode , pasajero.statusFlight);
 }
 
 int printPassengers(Passenger list[], int tam)
@@ -175,7 +175,7 @@ int printPassengers(Passenger list[], int tam)
         system("cls");
         printf("      ***Pasajeros***\n\n");
         printf("------------------------------------------------\n");
-        printf("ID      NOMBRE      APELLIDO        PRECIO      TIPO 		ESTADO DEL VUELO\n\n");
+        printf("ID      NOMBRE      APELLIDO        PRECIO      TIPO    	CODIGO DE VUELO			ESTADO DEL VUELO\n\n");
 
         for(int i=0; i<tam; i++)
         {
@@ -364,7 +364,7 @@ int menuInformes(Passenger list[], int tam)
 		switch(opcion)
 		{
 			case 1:
-				orden=cargarInt("Ingrese el orden en el que deses mostrar \n1. Ascendente\n2. Descendente \n", 1, 2);
+				orden=cargarInt("Ingrese el orden en el que deses mostrar \n1. Descendente\n2. Ascendente \n", 1, 2);
 				if (sortPassenger(list, tam, orden) == 1)
 				{
 					todoOk = 1;
@@ -400,124 +400,153 @@ int menuInformes(Passenger list[], int tam)
 	return todoOk;
 }
 
-int sortPassenger(Passenger* list, int tam, int order)
+int sortPassenger(Passenger* list, int len, int order)
 {
-	int todoOk=0;
 	Passenger aux;
+	int retorno = 0;
+	int i;
+	int estaOrdenado = 0;
 
-	if(list != NULL && tam > 0)
+	if (list != NULL && len > 0)
 	{
-	    if(order==1)
-	    {
-	        for(int i=0; i<tam - 1; i++)
-	        {
-	            for(int j=i+1; j<tam; j++)
-	            {
-	                if(list[i].isEmpty == 0)
-	                {
-	                    if(strcmp(list[i].lastname,list[j].lastname)>0) //descendente?? revisar condicion
-	                    {
-							todoOk=1;
-							aux = list[i];
-							list[i] = list[j];
-							list[j] = aux;
-	                    }
-						if(strcmp(list[i].lastname,list[j].lastname)==0)
-						{
-							if(list[i].typePassenger > list[j].typePassenger)
-							{
-								todoOk = 1;
-								aux = list[i];
-								list[i] = list[j];
-								list[j] = aux;
-							}
-						}
-	                }
-	            }
-	         }
-	    }
-	    if(order==2)
-	    {
-	                for(int i=0; i<tam -1 ; i++)
-	                {
-	            for(int j=i+1; j<tam; j++)
+		if(order == 1)
+		{
+			do
+			{
+				estaOrdenado = 1;
+				len--;
+				for (i = 0; i < len; i++)
 				{
 					if(list[i].isEmpty == 0)
 					{
-						if(strcmp(list[i].lastname,list[j].lastname)<0)
+
+						if (strcmp(list[i].lastname,list[i+1].lastname) > 0)
 						{
-							todoOk=1;
 							aux = list[i];
-							list[i] = list[j];
-							list[j] = aux;
+							list[i] = list[i+1];
+							list[i+1] = aux;
+							estaOrdenado = 0;
 						}
-						if(strcmp(list[i].lastname,list[j].lastname)==0)
+						if	((strcmp(list[i].lastname,list[i+1].lastname) == 0 && list[i].typePassenger > list[i+1].typePassenger))
 						{
-							if(list[i].typePassenger < list[j].typePassenger)
-							{
-								todoOk=1;
-								aux = list[i];
-								list[i] = list[j];
-								list[j] = aux;
-							}
+
+							aux = list[i];
+							list[i] = list[i+1];
+							list[i+1] = aux;
+							estaOrdenado = 0;
 						}
 					}
 				}
-	         }
-	    }
+			}while(estaOrdenado == 0);
+		}
+	if(order == 2)
+	{
+		do
+		{
+			estaOrdenado = 1;
+			len--;
+			for (i = 0; i < len; i++)
+			{
+				if(list[i].isEmpty == 0)
+				{
+
+					if (strcmp(list[i].lastname,list[i+1].lastname) < 0)
+					{
+						aux = list[i];
+						list[i] = list[i+1];
+						list[i+1] = aux;
+						estaOrdenado = 0;
+					}
+					if	((strcmp(list[i].lastname,list[i+1].lastname) == 0 && list[i].typePassenger < list[i+1].typePassenger))
+					{
+
+						aux = list[i];
+						list[i] = list[i+1];
+						list[i+1] = aux;
+						estaOrdenado = 0;
+					}
+				}
+			}
+		}while(estaOrdenado == 0);
 	}
-	    return todoOk;
+	retorno = 1;
+	}
+	return retorno;
 }
 
 
-
-int sortPassengersByCode(Passenger* list, int tam, int order)
+int sortPassengersByCode(Passenger* list, int len, int order)
 {
-	int todoOk=0;
 	Passenger aux;
+	int retorno = 0;
+	int i;
+	int estaOrdenado = 0;
 
-	if(list != NULL && tam > 0)
+	if (list != NULL && len > 0)
 	{
-	    if(order==1)
-	    {
-	        for(int i=0; i<tam - 1; i++)
-	        {
-	            for(int j=i+1; j<tam; j++)
-	            {
-	                if(list[i].isEmpty==0 && list[i].statusFlight == 1)
-	                {
-	                    if(strcmp(list[i].flycode,list[j].flycode)>0) //descendente?? revisar condicion
-	                    {
-							todoOk=1;
-							aux = list[i];
-							list[i] = list[j];
-							list[j] = aux;
-	                    }
-	                }
-	            }
-	         }
-	    }
-	    if(order==2)
-	    {
-	                for(int i=0; i<tam -1 ; i++)
-	                {
-	            for(int j=i+1; j<tam; j++)
+		if(order == 1)
+		{
+			do
+			{
+				estaOrdenado = 1;
+				len--;
+				for (i = 0; i < len; i++)
 				{
-					if(list[i].isEmpty == 0 && list[i].statusFlight == 1)
+					if(list[i].isEmpty == 0)
 					{
-						if(strcmp(list[i].flycode,list[j].flycode)<0)
+
+						if (strcmp(list[i].flycode,list[i+1].flycode) > 0)
 						{
-							todoOk=1;
 							aux = list[i];
-							list[i] = list[j];
-							list[j] = aux;
+							list[i] = list[i+1];
+							list[i+1] = aux;
+							estaOrdenado = 0;
+						}
+						if	((strcmp(list[i].flycode,list[i+1].flycode) == 0 && list[i].statusFlight > list[i+1].statusFlight))
+						{
+
+							aux = list[i];
+							list[i] = list[i+1];
+							list[i+1] = aux;
+							estaOrdenado = 0;
 						}
 					}
 				}
-	         }
-	    }
+			}while(estaOrdenado == 0);
+		}
+	if(order == 2)
+	{
+		do
+		{
+			estaOrdenado = 1;
+			len--;
+			for (i = 0; i < len; i++)
+			{
+				if(list[i].isEmpty == 0)
+				{
+
+					if (strcmp(list[i].flycode,list[i+1].flycode) < 0)
+					{
+						aux = list[i];
+						list[i] = list[i+1];
+						list[i+1] = aux;
+						estaOrdenado = 0;
+					}
+					if	((strcmp(list[i].flycode,list[i+1].flycode) == 0 && list[i].statusFlight < list[i+1].statusFlight))
+					{
+
+						aux = list[i];
+						list[i] = list[i+1];
+						list[i+1] = aux;
+						estaOrdenado = 0;
+					}
+				}
+			}
+		}while(estaOrdenado == 0);
 	}
-	return todoOk;
+	retorno = 1;
+	}
+	return retorno;
 }
 
 
@@ -539,8 +568,7 @@ float promedyPrice(Passenger list[], int tam)
            }
         resultado = (float) total/contador;
        }
-       printf("El precio total de todos los pasajes es %2f", total);
-       system("pause");
+       printf("El precio total de todos los pasajes es %2f y el promedio del precio es %2f \n", total, resultado);
    }
     return resultado;
 }
@@ -554,9 +582,10 @@ int showPromedy(Passenger list[], int tam)
 	if(list != NULL && tam>0)
 	{
 		promedioPrecios = promedyPrice(list, tam);
+
 		for(int i = 0; i < tam; i++)
 		{
-			if (list[i].price > promedioPrecios)
+			if (list[i].isEmpty == 0 && list[i].price > promedioPrecios)
 			{
 				contador++;
 				todoOk = 1;

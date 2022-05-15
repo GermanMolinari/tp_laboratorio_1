@@ -5,6 +5,7 @@
  ============================================================================
  */
 
+
 #include <stdio.h>
 #include <stdlib.h>
 #include "ArrayPassenger.h"
@@ -28,6 +29,7 @@ int main(void) {
 				if (recuestData(&id, &auxPassenger) == 1)
 				{
 					 addPassenger(list, TAM, id, auxPassenger.name, auxPassenger.lastname, auxPassenger.price, auxPassenger.statusFlight, auxPassenger.flycode, auxPassenger.typePassenger);
+					 flag = 1;
 				}
 				else
 				{
@@ -37,36 +39,57 @@ int main(void) {
 				break;
 
 			case 2:
-				if(modifyPassenger(list, TAM) == 1)
+				if (flag == 1)
 				{
-					printf("Modificacion exitosa! \n");
+					if(modifyPassenger(list, TAM) == 1)
+					{
+						printf("Modificacion exitosa! \n");
+					}
+					else
+					{
+						printf("No se pudo modificar \n");
+					}
 				}
 				else
 				{
-					printf("No se pudo modificar \n");
+					printf("Primero debe cargar vuelos \n");
 				}
 				break;
 
 			case 3:
-				if(removePassenger(list, TAM) == 1)
+				if (flag == 1)
 				{
-					printf("Baja exitosa! \n");
+					if(removePassenger(list, TAM) == 1)
+					{
+						printf("Baja exitosa! \n");
+					}
+					else
+					{
+						printf("No se pudo dar la baja. \n");
+
+					}
 				}
 				else
 				{
-					printf("No se pudo dar la baja. \n");
-
+					printf("Primero debe cargar vuelos \n");
 				}
 				break;
 
 			case 4:
-				if(menuInformes(list, TAM) == 1)
+				if (flag == 1)
 				{
-					printf("Informes completados!");
+					if(menuInformes(list, TAM) == 1)
+					{
+						printf("Informes completados!");
+					}
+					else
+					{
+						printf("No se pudo informar. \n");
+					}
 				}
 				else
 				{
-					printf("No se pudo informar. \n");
+					printf("Primero debe cargar vuelos \n");
 				}
 				break;
 
@@ -75,6 +98,7 @@ int main(void) {
 				{
 					printf("Se cargaron 10 pasajeros!");
 				}
+				flag = 1;
 				break;
 			case 6:
 				salir = 's';
