@@ -1,119 +1,156 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "parser.h"
 #include "LinkedList.h"
 #include "Controller.h"
 #include "Passenger.h"
-
-/****************************************************
-    Menu:
-     1. Cargar los datos de los pasajeros desde el archivo data.csv (modo texto).
-     2. Cargar los datos de los pasajeros desde el archivo data.csv (modo binario).
-     3. Alta de pasajero
-     4. Modificar datos de pasajero
-     5. Baja de pasajero
-     6. Listar pasajeros
-     7. Ordenar pasajeros
-     8. Guardar los datos de los pasajeros en el archivo data.csv (modo texto).
-     9. Guardar los datos de los pasajeros en el archivo data.csv (modo binario).
-    10. Salir
-*****************************************************/
-
-
+#define TAM_TIPO 3
+#define TAM_ESTADO 4
 
 int main()
 {
-    int option = 0;
-    setbuf(stdout,NULL);
-    LinkedList* listaPasajeros = ll_newLinkedList();
-    do{
-    	option = menu();
-        switch(option)
-        {
-            case 1:
-                if(controller_loadFromText("data.csv",listaPasajeros) == 1)
-                {
-                	printf("Se realizo con exito \n");
-                }
-                else
-                {
-                	printf("Fallo la carga desde el .csv \n");
-                }
-                break;
-            case 2 :
-            	if(controller_loadFromBinary("data.bin" , listaPasajeros) == 1)
-            	{
-                	printf("Se realizo con exito \n");
+	eEstadoPass estados[TAM_ESTADO]= {{1,"Aterrizado"},{2,"En Horario"},{3,"En Vuelo"},{4,"Demorado"}};
+	eTipoPass tipos [TAM_TIPO]= {{1,"FirstClass"},{2,"ExecutiveClass"},{3,"EconomyClass"}};
+
+	int option = 0;
+	int flagSave = -1;
+	int flagCarga = -1;
+	int flagAlta = -1;
+
+	setbuf(stdout,NULL);
+	LinkedList* listaPasajeros = ll_newLinkedList();
+	do{
+		controller_Menu();
+		option = EnterNumberInt("Ingrese una opcion: ", "Error, Ingrese una opcion valida: ", 110, 1);
+
+		switch(option)
+		{
+			case 1:
+				if(flagCarga == -1 && controller_loadFromText("data.csv",listaPasajeros) == 0)
+				{
+					printf("Se realizo con exito \n");
+					flagCarga = 0;
+				}
+				else
+				{	if(flagCarga == 0)
+					{
+						printf("La lista ya fue cargada previamente \n");
+					}
+					else
+					{
+						printf("Fallo la carga desde el .csv \n");
+					}
+				}
+				break;
+
+			case 2 :
+				if(flagCarga == -1 && controller_loadFromBinary("data.bin" , listaPasajeros) == 0)
+				 {
+					printf("Se realizo con exito \n");
+					flagCarga =0;
+				 }
+					else
+					{	if(flagCarga == 0)
+						{
+							printf("La lista ya fue cargada previamente \n");
+						}
+						else
+						{
+							printf("Fallo la carga desde el .bin \n");
+						}
+					}
+				break;
+
+			case 3:
+				if(controller_addPassenger(listaPasajeros, tipos, TAM_TIPO, estados, TAM_ESTADO) == 0)
+				{
+					flagAlta = 0;
+					printf("Se realizo con exito \n");
 				}
 				else
 				{
-                	printf("Fallo la carga del .bin \n");
+					printf("No se pudo dar de alta \n");
 				}
-            	break;
-            case 3:
-            	if(controller_addPassenger(listaPasajeros) == 1)
-            	{
-                	printf("Se realizo con exito \n");
-            	}
-            	else
-            	{
-                	printf("No se pudo dar de alta \n");
-            	}
-            	break;
+				break;
 
-            case 4:
-            	if(controller_editPassenger(listaPasajeros) == 1)
-            	{
-                	printf("Se realizo con exito \n");
-            	}
-            	else
-            	{
-                	printf("No se pudo modificar \n");
-            	}
-            	break;
+			case 4:
+				if((flagAlta == 0 || flagCarga == 0) && controller_editPassenger (listaPasajeros, tipos, TAM_TIPO, estados, TAM_ESTADO) == 0)
+				{
+					printf("Se realizo con exito \n");
+				}
+				else
+				{
+					printf("No se pudo modificar \n");
+				}
+				break;
 
-            case 5:
-            	if(controller_removePassenger(listaPasajeros) == 1)
-            	{
-                	printf("Se realizo con exito \n");
-            	}
-            	else
+			case 5:
+				if((flagAlta == 0 || flagCarga == 0) && controller_removePassenger(listaPasajeros, tipos, TAM_TIPO, estados, TAM_ESTADO) == 0)
+				{
+					printf("Se realizo con exito \n");
+				}
+				else
 				{
 					printf("No se pudo dar la baja \n");
 				}
-            	break;
+				break;
 
-            case 6:
-            	if(controller_ListPassenger(listaPasajeros) != 1)
-            	{
-            		printf("No se pudo mostrar \n");
-            	}
+			case 6:
+				if((flagAlta == 0 || flagCarga == 0) && controller_ListPassenger(listaPasajeros,tipos,TAM_TIPO,estados,TAM_ESTADO) == 0)
+				{
+					printf("Se realizo con exito \n");
+				}
+				else
+				{
+					printf("No se pudo mostrar\n");
+				}
+				break;
 
-            	break;
+			case 7:
+				if((flagAlta == 0 || flagCarga == 0) && controller_sortPassenger(listaPasajeros) == 0)
+				{
+					printf("Se ordeno con exito\n");
+				}
+				else
+				{
+					printf("No se pudo ordenar\n");
+				}
+				break;
 
-            case 7:
-            	if(controller_sortPassenger(listaPasajeros) == 1)
-            	{
-            		printf("Se ordeno con exito\n");
-            	}
-            	else
-            	{
-            		printf("No se pudo ordenar\n");
-            	}
-            	break;
+			case 8:
+				if((flagAlta == 0 || flagCarga == 0) && controller_saveAsText("data.csv", listaPasajeros) == 0)
+				{
+					printf("Se guardo con exito! \n");
+					flagSave = 0;
+				}
+				else
+				{
+					printf("No se pudo guardar\n");
+				}
+				break;
 
-            case 8:
+			case 9:
+				if((flagAlta == 0 || flagCarga == 0) && controller_saveAsBinary("data.bin", listaPasajeros) == 0)
+				{
+					printf("Se guardo con exito! \n");
+					flagSave = 0;
+				}
+				else
+				{
+					printf("No se pudo guardar\n");
+				}
+				break;
 
-            	break;
-
-            case 9:
-
-            	break;
-            case 10:
-
-            	break;
-
-        }
-    }while(option != 10);
-    return 0;
+			case 10:
+				if(flagSave == 0 && ll_isEmpty(listaPasajeros) != 1)
+				{
+					option = 999;
+				}
+				else
+				{
+					printf("Primero debe guardar\n");
+				}
+		}
+	}while(option != 999);
+	return 0;
 }
-

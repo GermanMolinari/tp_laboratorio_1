@@ -1,344 +1,274 @@
-/*
- * validaciones.c
- *
- *  Created on: 7 abr 2022
- *      Author: bolsi uwu
- */
-
-#include <ctype.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include "validaciones.h"
+#include <stdlib.h>
+#include <stdio.h>
 
 
-int getInt(int * pNumeroIngresado,char * mensaje,char * mensajeError,
-		int maximo, int minimo, int maximoDeReintentos)
+/// @brief Permite ingresar un numero entero con un maximo y un minimo validando que el dato ingresado sea correcto
+///
+/// @param message
+/// @param errorMessage
+/// @param max
+/// @param min
+/// @return
+int EnterNumberInt (char message[], char errorMessage[],  int max, int min)
 {
+    char enteredNumber [51];
+    int isNaN;
+    int validatedNumber;
 
-	int auxNumeroIngresado;
-	int retorno;
-	retorno = -1;
-
-	if(pNumeroIngresado != NULL && maximo >= minimo && maximoDeReintentos>= 0)
-	{
-		do
-		{
-			printf("%s", mensaje);
-			scanf("%d", &auxNumeroIngresado);
-			maximoDeReintentos--;
-
-			if(auxNumeroIngresado >= minimo && auxNumeroIngresado <= maximo)
-			{
-						*pNumeroIngresado = auxNumeroIngresado;
-						retorno = 0;
-						break;
-			}else
-			{
-				printf("%s", mensajeError);
-			}
-
-		}while(maximoDeReintentos > 0);
-	}
-
-	return retorno;
-}
-
-int getFloat(float * pNumeroIngresado,char * mensaje,char * mensajeError,
-		float maximo, float minimo, int maximoDeReintentos){
-
-	float auxNumeroIngresado;
-	int retorno;
-	retorno = -1;
-
-	if(pNumeroIngresado != NULL && maximo >= minimo && maximoDeReintentos>= 0){
-		do{
-			printf("%s", mensaje);
-			scanf("%f", &auxNumeroIngresado);
-			maximoDeReintentos--;
-
-			if(auxNumeroIngresado >= minimo && auxNumeroIngresado <= maximo){
-						*pNumeroIngresado = auxNumeroIngresado;
-						retorno = 0;
-						break;
-			}else{
-				printf("%s", mensajeError);
-			}
-
-		}while(maximoDeReintentos > 0);
-	}
-
-	return retorno;
-}
-
-int ordenarArrayEnteros(int pArray[], int len) {
-
-	int retorno = -1;
-	int i;
-	int aux;
-	int estaOrdenado;
-
-	if (pArray != NULL && len > 0) {
-
-		do {
-			estaOrdenado = 1;
-			len--;
-			for (i = 0; i < len; i++) {
-
-				if (pArray[i] > pArray[i + 1]) {
-
-					aux = pArray[i];
-					pArray[i] = pArray[i + 1];
-					pArray[i + 1] = aux;
-					estaOrdenado = 0;
-				}
-			}
-		}while(estaOrdenado == 0);
-
-	}
-
-	return retorno;
-}
-
-int swapearEnteros (int* a, int* b)
-{
-	int retorno = -1;
-	int aux;
-
-	if(a != NULL && b != NULL)
-	{
-		aux = *b;
-		*b = *a;
-		*a = aux;
-		retorno = 0;
-	}
-
-	return retorno;
-}
-
-int swapearFloat (float* a, float* b)
-{
-	int retorno = -1;
-	float aux;
-
-	if(a != NULL && b != NULL)
-	{
-		aux = *b;
-		*b = *a;
-		*a = aux;
-		retorno = 0;
-	}
-
-	return retorno;
-}
-
-
-int swapearChar (char* a, char* b)
-{
-	int retorno = -1;
-	char aux;
-
-	if(a != NULL && b != NULL)
-	{
-		aux = *b;
-		*b = *a;
-		*a = aux;
-		retorno = 0;
-	}
-
-	return retorno;
-}
-
-int validarLetras(char cadena[])
-{
-	int retorno=1;
-	int i=0;
-	if(cadena!=NULL)
-	{
-		while(cadena[i]!='\0')
-		{
-			if(cadena[i]<'A' || (cadena[i]>'Z' && cadena[i]<'a') || cadena[i]>'z')
-			{
-				retorno=0;
-				break;
-			}
-			i++;
-		}
-	}
-
-	return retorno;
-}
-
-int validarAlfaNum(char cadena[])
-{
-	int retorno=1;
-	int i=0;
-	if(cadena!=NULL)
-	{
-		while(cadena[i]!='\0')
-		{
-			if(isalnum(cadena[i]) == 1 && cadena[i] == ' ')
-			{
-				retorno=0;
-				break;
-			}
-			i++;
-		}
-	}
-
-	return retorno;
-}
-
-int validarEntero(char numero[])
-{
-    int i=0;
-    int len;
-    int retorno=1;
-
-    len=strlen(numero);
-    while(i<len && retorno==1)
+    do
     {
-        if(isdigit(numero[i])!=0)
+        printf("%s", message);
+        fflush(stdin);
+        scanf("%[^\n]",enteredNumber);
+        isNaN = ValidateNumberInt(enteredNumber, min, max);
+
+        while(isNaN ==-1)
         {
-            i++;
+        printf("%s", errorMessage);
+        fflush(stdin);
+        scanf("%[^\n]",enteredNumber);
+        isNaN = ValidateNumberInt(enteredNumber, min, max);
         }
+
+        validatedNumber = atoi(enteredNumber);
+
+    }while (validatedNumber < min || validatedNumber > max);
+
+    return validatedNumber;
+}
+
+/// @brief Permite el ingreso de una cadena validando que el dato ingresado sea correcto
+///
+/// @param message
+/// @param enteredString
+void EnterString (char message[], char enteredString[])
+{
+    int isString;
+
+    printf("%s", message);
+    fflush(stdin);
+    scanf("%[^\n]", enteredString);
+
+    isString = ValidateString (enteredString);
+    while(isString == -1)
+    {
+    printf(" %s", message);
+    fflush(stdin);
+    scanf("%[^\n]", enteredString);
+    isString = ValidateString (enteredString);
+
+    }
+    NormalizeString(enteredString);
+}
+
+
+void EnterStringWithNumbers(char message[], char enteredString[])
+{
+    int isString;
+
+    printf("%s", message);
+    fflush(stdin);
+    scanf("%[^\n]", enteredString);
+
+    isString = ValidateStringWithNumbers(enteredString);
+    while(isString == -1)
+    {
+    printf(" %s", message);
+    fflush(stdin);
+    scanf("%[^\n]", enteredString);
+    isString = ValidateStringWithNumbers(enteredString);
+
+    }
+    NormalizeString(enteredString);
+}
+/// @brief Permite ingresar un numero flotante con un maximo y un minimo validando que el dato ingresado sea correcto
+///
+/// @param message
+/// @param errormsg
+/// @param min
+/// @return
+float EnterNumberFloat (char message[], char errormsg[], int min)
+{
+    char enteredNumber [51];
+    int isNaN;
+    float validatedNumber;
+
+    do
+    {
+
+        printf("%s", message);
+        fflush(stdin);
+        scanf("%[^\n]",enteredNumber);
+        isNaN = ValidateNumberFloat(enteredNumber, min);
+
+        while(isNaN == -1)
+        {
+        printf("%s",errormsg);
+        fflush(stdin);
+        scanf("%[^\n]",enteredNumber);
+        isNaN = ValidateNumberFloat(enteredNumber, min);
+        }
+        validatedNumber = atof(enteredNumber);
+
+    }while (validatedNumber <= min);
+
+    return validatedNumber;
+}
+
+
+/// @brief Valida que el numero que recibe por parametro sea numero
+///
+/// @param enteredNumber
+/// @return
+int ValidateNumberInt(char enteredNumber[], int min, int max)
+{
+    int validatedNumber = 0;
+    int auxNumber;
+    for(int i=0; i < strlen(enteredNumber); i++)
+    {
+    	auxNumber = atoi(enteredNumber);
+        if ((isdigit(enteredNumber[i])==0) || auxNumber > max  || auxNumber < min )
+        {
+        validatedNumber = -1;
+        break;
+        }
+    }
+ return validatedNumber;
+}
+
+/// @brief Valida que la cadena que recibe por parametro sea correcta, y chequea que no se ingresen datos en blanco, o signos de puntuacion
+///
+/// @param enteredString
+/// @return
+int ValidateString(char enteredString[])
+{
+    int validatedString = 0;
+    for(int i=0; i < strlen(enteredString); i++)
+    {
+         if (enteredString[0] == ' ')
+        {
+            validatedString = -1;
+            printf("No se admiten espacio como nombres.");
+            break;
+        }
+        else if (enteredString[i] == '-')
+        {
+       	validatedString = 0;
+      	break;
+        }
+        else if (isalpha(enteredString[i])==0 && enteredString[i] != ' ' )
+        {
+        validatedString = -1;
+        printf("No se admiten numeros/signos como nombres.");
+        break;
+        }
+		else if (enteredString[i] == ' ' && enteredString[i+1] == ' ')
+		{
+			validatedString = -1;
+			printf("No se admiten mas de dos espacios seguidos.");
+			break;
+		}
+
+    }
+    return validatedString;
+}
+
+/// @brief Valida que el dato que recibe por parametro sea un numero y tambien que no se ingresen mas de una coma
+///
+/// @param enteredNumber
+/// @return
+int ValidateNumberFloat(char enteredNumber[], int min)
+{
+    int validatedNumber;
+    int flag=1;
+    int auxNumber;
+
+    for(int i = 0; i< strlen(enteredNumber); i++)
+    {
+    	auxNumber = atof(enteredNumber);
+
+        if (flag && enteredNumber[i] == '.')
+        {
+                flag = 0;
+        }else if(isdigit(enteredNumber[i])==0 || auxNumber <= min)
+            {
+                validatedNumber = -1;
+                break;
+            }
+
+    }
+    return validatedNumber;
+}
+
+/// @brief Permite que la cadena que recibe por parametro se normalize colocando la primer letra en mayuscula y las demas en minuscula
+///
+/// @param enteredString
+void NormalizeString(char enteredString[])
+{
+
+    int flagNormalize = 1;
+    for(int i=0;i<strlen(enteredString);i++)
+    {
+        if(enteredString[i]== ' ')
+        {
+        flagNormalize = 1;
+        }
+
+         else if (flagNormalize && enteredString[i]!= ' ')
+        {
+            enteredString[i] = toupper(enteredString[i]);
+            flagNormalize = 0;
+
+        }
+
         else
         {
-            retorno=0;
-        }
-    }
-    return retorno;
-}
-
-int cargarInt(char message[],int min, int max)
-{
-    char option[50];
-    int retornoValidacion=0;
-    int enteroValido;
-    int flag=0;
-    do
-    {
-		if (flag==1)
-		{
-			printf("ERROR.");
-		}
-		printf("%s", message);
-		fflush(stdin);
-		scanf("%[^\n]", option);
-		retornoValidacion = validarEntero(option);
-
-		while(retornoValidacion != 1)
-		{
-			printf("ERROR. '%s' no es una opcion, %s",option, message);
-			fflush(stdin);
-			scanf("%[^\n]", option);
-			retornoValidacion = validarEntero(option);
-		}
-
-		enteroValido = atoi(option);
-		flag=1;
-
-    }while(enteroValido < min || enteroValido > max);
-
-    return enteroValido;
-}
-
-int validarFloat(char number[])
-{
-    int i=0;
-    int retorno=1;
-    int len;
-    int flag=1;
-
-    len=strlen(number);
-
-    while(i<len && retorno==0)
-    {
-        if(isdigit(number[i]) != 0)
-        {
-            i++;
-        }else if(flag && (number[i])=='.')
-        {
-            i++;
-            flag=0;
-        }else
-        {
-        	retorno=0;
+        enteredString[i] = tolower(enteredString[i]);
         }
 
     }
-    return retorno;
 }
 
-float cargarFloat(char mensaje[], int min, int max)
+void NormalizeStringToUpper(char enteredString[])
 {
-    char opcion[50];
-    int retornoValidacion=0;
-    float floatValido;
-    int flag=0;
-    do
+    for(int i=0;i<strlen(enteredString);i++)
     {
-		if(flag == 1)
-		{
-			printf("ERROR.");
-		}
-		printf("%s", mensaje);
-		fflush(stdin);
-		scanf("%[^\n]", opcion);
 
-		retornoValidacion = validarFloat(opcion);
-
-		while(retornoValidacion!=1)
-		{
-			printf("ERROR. '%s' no es un numero valido, %s",opcion, mensaje);
-			 fflush(stdin);
-			scanf("%[^\n]", opcion);
-			retornoValidacion=validarFloat(opcion);
-		}
-		floatValido= atof(opcion);
-		flag=1;
-    }while(floatValido < min || floatValido > max);
-
-    return floatValido;
+            enteredString[i] = toupper(enteredString[i]);
+     }
+}
+int ValidateNumberIntWithoutRestriction(char enteredNumber[])
+{
+	int validatedNumber = 0;
+	    for(int i=0; i < strlen(enteredNumber); i++)
+	    {
+	        if ((isdigit(enteredNumber[i])==0))
+	        {
+	        validatedNumber = -1;
+	        break;
+	        }
+	    }
+	 return validatedNumber;
 }
 
-int cargarIntEnCadena(char message[], int min, int max,char cadena[])
+int ValidateStringWithNumbers(char enteredString[])
 {
-
-    char intChar[50];
-    int validacion = 0;
-    int opcionValida;
-    int todoOk = 0;
-    int flag = 0;
-
-    do {
-
-    	if (flag == 1)
-    	{
-    		printf("ERROR.");
-    	}
-
-    	printf("%s", message);
-    	fflush(stdin);
-    	scanf("%[^\n]", intChar);
-
-    	validacion = validarEntero(intChar);
-
-    	while(validacion != 0)
-    	{
-    		printf("ERROR. '%s' no es una opcion, %s",intChar, message);
-    		fflush(stdin);
-    		scanf("%[^\n]", intChar);
-    		validacion = validarEntero(intChar);
-    	}
-
-    	validacion = atoi(intChar);
-    	flag = 1;
-
-    } while(opcionValida < min || opcionValida > max);
-
-    todoOk = 1;
-    strcpy(cadena,intChar);
-
-    return todoOk;
+	int validatedString = 0;
+	    for(int i=0; i < strlen(enteredString); i++)
+	    {
+	         if (enteredString[0] == ' ')
+	        {
+	            validatedString = -1;
+	            printf("No se admiten espacio como nombres.");
+	            break;
+	        }
+	 		else if (enteredString[i] == ' ' && enteredString[i+1] == ' ')
+	 		{
+	 			validatedString = -1;
+	 			printf("No se admiten mas de dos espacios seguidos.");
+	 			break;
+	 		}
+	    }
+	     return validatedString;
 }
